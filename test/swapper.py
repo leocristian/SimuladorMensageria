@@ -18,7 +18,7 @@ class Swapper:
             comand = clientsock.recv(2048).decode()
             self.to_distribute(comand)
     
-    def to_distribute(self, message: dict):
+    def to_distribute(self, comand: dict):
         pass
 
 if __name__=='__main__':
