@@ -46,22 +46,29 @@ class Producer:
         addres = ("localhost", 8000) #host and port
         
         while True:
-            self.producer_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.producer_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR , 1)
-            self.producer_server.connect(addres)
+            try:
+                print('sending...')
+                self.producer_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.producer_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR , 1)
+                self.producer_server.connect(addres)
 
-            message = self.getRandomMsg();
+                message = self.getRandomMsg();
 
-            date_info = str(datetime.datetime.now())
+                date_info = str(datetime.datetime.now())
 
-            data = {'received_datetime': date_info,'producer_id': self._id, 'label':  self.getRadomLabels(), 'message': message}
+                data = {'received_datetime': date_info,'producer_id': self._id, 'label':  self.getRadomLabels(), 'message': message}
+                
+                self.producer_server.send(str(data).encode())
             
-            self.producer_server.send(str(data).encode())
-           
-            time.sleep(1)
+                time.sleep(1.5)
+            except:
+                print('swapper is not alive')
+                print('trying to connect again')
+                time.sleep(1)
             
 
 if __name__=='__main__':
     
     producer = Producer()
     producer.start()
+
