@@ -4,6 +4,7 @@ import threading
 import random
 import time
 import uuid
+import sys
 
 #by joão carlos
 
@@ -43,7 +44,8 @@ class Producer:
         
         return labels[random.randint(0, (len(labels) -1) )]
 
-    def start(self):
+    def start(self, label:str, total_messages_per_minute:int):
+
         print('producer is started')
         addres = ("localhost", 8000) #host and port
         
@@ -58,11 +60,12 @@ class Producer:
 
                 date_info = str(datetime.datetime.now())
 
-                data = {'received_datetime': date_info,'producer_id': self._id, 'label':  self.getRadomLabels(), 'message': message}
+                data = {'received_datetime': date_info,'producer_id': self._id, 'label':  label, 'message': message}
                 
                 self.producer_server.send(str(data).encode())
-            
-                time.sleep(1.5)
+
+                time.sleep( 60 / total_messages_per_minute )
+
             except:
                 print('swapper is not alive')
                 print('trying to connect again')
@@ -70,7 +73,15 @@ class Producer:
             
 
 if __name__=='__main__':
+
+    if (len(sys.argv) - 1) > 4:
+        print("argumentos invalidos")
     
+    label = sys.argv[2]
+    mensage_per_minute = int(sys.argv[4])
+
     producer = Producer()
-    producer.start()
+
+    producer.start(label, mensage_per_minute)
+    
 
