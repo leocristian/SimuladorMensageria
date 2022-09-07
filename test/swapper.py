@@ -1,24 +1,28 @@
 import socket
 import threading
+import json
 
 class Swapper:
     def __init__(self):
         addres = ("localhost", 8000) #host and port
 
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server.bind(addres)
+        self.swapper_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.swapper_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.swapper_server.bind(addres)
 
     def start(self):
-        self.server.listen(1)
+        self.swapper_server.listen(10)
         print('swapper is started')
-
+        
         while True:
-            clientsock, clientAddr = self.server.accept()
-            comand = clientsock.recv(2048).decode()
-            self.to_distribute(comand)
+        
+            clientsock, clientAddr = self.swapper_server.accept()
+            msg = clientsock.recv(1024).decode()
+
+            print(msg)
+            
     
-    def to_distribute(self, comand: dict):
+    def to_distribute(self, msg: dict):
         pass
 
 if __name__=='__main__':
