@@ -19,7 +19,9 @@ class Swapper:
             clientsock, clientAddr = self.swapper_server.accept()
             msg = clientsock.recv(1024).decode()
 
-            print(msg)
+            msg = json_object = json.dumps(eval(msg), indent = 4)
+            
+            print('\n' + msg)
             
     
     def to_distribute(self, msg: dict):
