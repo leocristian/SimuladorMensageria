@@ -29,13 +29,10 @@ class Swapper:
             msg = json.dumps(msg, indent = 4)
 
             print('\n' + msg)
-            
     
     def to_distribute(self, msg: dict):
         pass
 
 if __name__=='__main__':
-
     swapper = Swapper()
-
     swapper.start()
