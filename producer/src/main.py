@@ -38,13 +38,11 @@ class Producer:
             address = ("localhost", 8000)
 
             msgBody = self.getRandomMsg()
-            msg = {"topic": self.topic, "body": msgBody}
+            msg = {"producerID": threading.get_ident(), "topic": self.topic, "body": msgBody}
 
             try:
-
                 self.sendMessage(msg, address)
                 time.sleep(1/self.rate)
-
             except Exception as err:
                 print(f"Error: {err}")
                 break
@@ -55,4 +53,4 @@ class Producer:
 if __name__ == "__main__":
     
     producer1 = Producer("fanout", 1)
-    #producer1.run()
+    # producer1.run()
