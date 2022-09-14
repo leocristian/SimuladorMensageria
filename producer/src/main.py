@@ -9,8 +9,10 @@ class Producer:
     def __init__(self, topic, rate):
         self.topic = topic
         self.rate = rate
+        self.name = "p1"
 
         self.thread = threading.Thread(target=self.startService())
+        self.thread.name = self.name
         self.thread.start()
 
     def getRandomMsg(self):
@@ -32,7 +34,7 @@ class Producer:
 
     def startService(self):
 
-        print(f"Thread: {threading.get_ident()} is running.")
+        #print(f"Thread: {self.thread.get_ident()} is running.")
         while True:
             
             address = ("localhost", 8000)

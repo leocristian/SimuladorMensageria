@@ -29,6 +29,11 @@ class Swapper:
             if msg["producerID"] not in self.producers:
                 self.producers.append(msg["producerID"])
                 self.queues.append({"producerID": msg["producerID"], "queue": []})
+            else:
+                for i in self.queues:
+                    if i["producerID"] == msg["producerID"]:
+                        i["queue"].append({"topic": msg["topic"], "body": msg["body"]})
+        
 
             print("Message Received...")
             print(self.queues)
