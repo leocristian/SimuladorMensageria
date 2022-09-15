@@ -12,9 +12,9 @@ class Swapper:
         self.producers = []
         self.queues = []
 
-    def start(self):
+    def receiveMessages(self):
         self.swapper_server.listen(10)
-        print('swapper is started')
+        print('swapper is receiving...')
         
         while True:
         
@@ -38,9 +38,11 @@ class Swapper:
             print("Message Received...")
             print(self.queues)
     
-    def to_distribute(self, msg: dict):
+    def distributeMessages(self):
+        print('swapper is sending...')
+
         pass
 
 if __name__=='__main__':
     swapper = Swapper()
-    swapper.start()
+    swapper.receiveMessages()
