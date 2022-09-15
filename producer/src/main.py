@@ -44,7 +44,9 @@ class Producer:
 
             try:
                 self.sendMessage(msg, address)
-                time.sleep(1/self.rate)
+                input("Press ENTER to continue...")
+
+                #time.sleep(1/self.rate)
             except Exception as err:
                 print(f"Error: {err}")
                 break

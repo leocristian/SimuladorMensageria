@@ -1,6 +1,7 @@
 import socket
 import threading
 import json
+from QueueController import QueueController
 
 class Swapper:
     def __init__(self):
@@ -9,8 +10,15 @@ class Swapper:
         self.swapper_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.swapper_server.bind(addres)
 
-        self.producers = []
-        self.queues = []
+        self.queueController = QueueController()
+
+        # Criação de thread para receber mensagens dos produtores e armazenar nas filas
+        self.recvMessagesThread = threading.Thread(target=self.receiveMessages())
+        self.recvMessagesThread.start()
+        
+        # Criação de thread para enviar mensagens para os consumidores corretos de acordo com o rótulo
+        self.distribMessagesThread = threading.Thread(target=self.distributeMessages())
+        self.distribMessagesTgread.Start()
 
     def receiveMessages(self):
         self.swapper_server.listen(10)
@@ -26,18 +34,15 @@ class Swapper:
             msg = json.dumps(msg, indent = 4)
             msg = json.loads(msg)
 
-            if msg["producerID"] not in self.producers:
-                self.producers.append(msg["producerID"])
-                self.queues.append({"producerID": msg["producerID"], "queue": []})
+            
+            if self.queueController.isNewProducer(msg["producerID"]):
+                self.queueController.createNewQueue(msg["producerID"])
             else:
-                for i in self.queues:
-                    if i["producerID"] == msg["producerID"]:
-                        i["queue"].append({"topic": msg["topic"], "body": msg["body"]})
-        
+                self.queueController.insertInCurrentQueue(msg)
 
             print("Message Received...")
-            print(self.queues)
-    
+            self.queueController.showAllQueues()
+ 
     def distributeMessages(self):
         print('swapper is sending...')
 
