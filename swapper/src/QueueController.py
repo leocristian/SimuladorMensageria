@@ -1,21 +1,28 @@
-
 class QueueController:
     def __init__(self):
         self.queues = []
-        self.producers = []
+        self.clients = []
 
-    def isNewProducer(self, producerID):
-        return (producerID not in self.producers)
+    def isNewClient(self, clientID):
+        return (clientID not in self.clients)
     
-    def createNewQueue(self, producerID):
-        self.producers.append(producerID)
-        self.queues.append({"producerID": producerID, "queue": []})
+    def createNewQueue(self, msg):
+        self.clients.append(msg["clientID"])
+        self.queues.append({"clientID": msg["clientID"], "queue": []})
+        self.insertInCurrentQueue(msg)
     
     def insertInCurrentQueue(self, msg):
         for i in self.queues:
-            if i["producerID"] == msg["producerID"]:
+            if i["clientID"] == msg["clientID"]:
                  i["queue"].append({"topic": msg["topic"], "body": msg["body"]})
+    
+    def removeFromQueue(self, clientID):
+        for i in self.queues:
+            if i["clientID"] == clientID:
+                i["queue"].pop()
 
     def showAllQueues(self):
         for i in self.queues:
-            print(f"producer: {i['producerID']} | queue: {i['queue']}")
+            print(f"Client: {i['clientID']}----------------")
+            for j in i["queue"]:
+                print(j)

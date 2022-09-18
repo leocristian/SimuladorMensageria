@@ -16,7 +16,7 @@ class Producer:
         self.thread.start()
 
     def getRandomMsg(self):
-        msgLen = random.randint(1, 1000)
+        msgLen = random.randint(1, 10)
         return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(msgLen))
 
     def sendMessage(self, msg, address):
@@ -40,7 +40,7 @@ class Producer:
             address = ("localhost", 8000)
 
             msgBody = self.getRandomMsg()
-            msg = {"producerID": threading.get_ident(), "topic": self.topic, "body": msgBody}
+            msg = {"clientID": threading.get_ident(), "topic": self.topic, "body": msgBody}
 
             try:
                 self.sendMessage(msg, address)

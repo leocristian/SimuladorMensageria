@@ -1,3 +1,4 @@
+from os import system
 import socket
 import threading
 import json
@@ -10,15 +11,21 @@ class Swapper:
         self.swapper_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.swapper_server.bind(addres)
 
-        self.queueController = QueueController()
+        self.queueProducerController = QueueController()
+        self.queueConsumerController = QueueController()
 
         # Criação de thread para receber mensagens dos produtores e armazenar nas filas
         self.recvMessagesThread = threading.Thread(target=self.receiveMessages())
-        self.recvMessagesThread.start()
         
         # Criação de thread para enviar mensagens para os consumidores corretos de acordo com o rótulo
         self.distribMessagesThread = threading.Thread(target=self.distributeMessages())
-        self.distribMessagesTgread.Start()
+        
+    def run(self):
+        self.recvMessagesThread.start()
+        self.recvMessagesThread.join()
+
+        self.distribMessagesThread.start()
+        self.distribMessagesThread.join()
 
     def receiveMessages(self):
         self.swapper_server.listen(10)
@@ -34,20 +41,21 @@ class Swapper:
             msg = json.dumps(msg, indent = 4)
             msg = json.loads(msg)
 
-            
-            if self.queueController.isNewProducer(msg["producerID"]):
-                self.queueController.createNewQueue(msg["producerID"])
+            if self.queueProducerController.isNewClient(msg["producerID"]):
+                self.queueProducerController.createNewQueue(msg)
             else:
-                self.queueController.insertInCurrentQueue(msg)
-
-            print("Message Received...")
-            self.queueController.showAllQueues()
+                self.queueProducerController.insertInCurrentQueue(msg)
+            
+            system("clear")
+            print("Producers queues------------------------------------")
+            self.queueProducerController.showAllQueues()
+            print("-----------------------------------------------------")
  
     def distributeMessages(self):
         print('swapper is sending...')
 
-        pass
+        pass    
 
 if __name__=='__main__':
     swapper = Swapper()
-    swapper.receiveMessages()
+    #swapper.run()
