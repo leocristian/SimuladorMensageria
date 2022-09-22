@@ -5,6 +5,9 @@ class QueueController:
 
     def isNewClient(self, clientID):
         return (clientID not in self.clients)
+
+    def createEmptyQueue(self, clientID):
+        self.queues.append({"clientID": clientID, "queue": []})
     
     def createNewQueue(self, msg):
         self.clients.append(msg["clientID"])
@@ -26,3 +29,9 @@ class QueueController:
             print(f"Client: {i['clientID']}----------------")
             for j in i["queue"]:
                 print(j)
+                
+    def showClientQueue(self, clientID):
+        for i in self.queues:
+            if i["clientID"] == clientID:
+                for j in i["queue"]:
+                    print(j)
