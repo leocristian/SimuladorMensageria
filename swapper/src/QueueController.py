@@ -2,40 +2,44 @@ class QueueController:
     def __init__(self):
         self.queues = []
         self.clients = []
+        self.consumers = []
+    
+    def isNewClient(self, topic):
+        return (topic not in self.clients)
 
-    def isNewClient(self, clientID):
-        return (clientID not in self.clients)
+    def isNewConsumer(self, consumerID):
+        return (consumerID not in self.consumers)
 
-    def createEmptyQueue(self, clientID):
-        self.queues.append({"clientID": clientID, "queue": []})
+    def createEmptyQueue(self, topic):
+        self.queues.append({"topic": topic, "queue": []})
     
     def createNewQueue(self, msg):
-        self.clients.append(msg["clientID"])
-        self.queues.append({"clientID": msg["clientID"], "queue": []})
+        self.clients.append(msg["topic"])
+        self.queues.append({"topic": msg["topic"], "queue": []})
         self.insertInCurrentQueue(msg)
     
     def insertInCurrentQueue(self, msg):
         for i in self.queues:
-            if i["clientID"] == msg["clientID"]:
-                 i["queue"].append({"topic": msg["topic"], "body": msg["body"]})
+            if i["topic"] == msg["topic"]:
+                 i["queue"].append({"clientID": msg["clientID"], "body": msg["body"]})
     
-    def removeFromQueue(self, clientID):
+    def removeFromQueue(self, topic):
         for i in self.queues:
-            if i["clientID"] == clientID:
+            if i["topic"] == topic:
                 i["queue"].pop()
 
     def showAllQueues(self):
         for i in self.queues:
-            print(f"Client: {i['clientID']}----------------")
+            print(f"topic: {i['topic']}----------------")
             for j in i["queue"]:
                 print(j)
     
     def showQueueLen(self):
         for i in self.queues:
-            print(f"{len(i['queue'])} messages messages received from client {i['clientID']} ")
+            print(f"{len(i['queue'])} messages messages received from topic {i['topic']} ")
                 
-    def showClientQueue(self, clientID):
+    def showClientQueue(self, topic):
         for i in self.queues:
-            if i["clientID"] == clientID:
+            if i["topic"] == topic:
                 for j in i["queue"]:
                     print(j)

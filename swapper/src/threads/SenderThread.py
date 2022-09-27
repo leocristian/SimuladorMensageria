@@ -1,22 +1,26 @@
 import threading
+import socket
 from ..QueueController import QueueController
 
 class SenderThread(threading.Thread):
-    def __init__(self, name, url, port):
-        self.url = url
-        self.port = port
+    def __init__(self, address, queueController):
+        self.address = address
+        self.queueController = queueController
         threading.Thread.__init__(self)
-        self.name = name
-        self.queueConsumerController = QueueController()
-        self.canClose = True
     
+    def sendMessage(self, msg, address):
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR , 1)
+        self.server.connect(address)
+        self.server.send(str(msg).encode())
+
     def run(self):
         print(f'Sender is started on address ({self.url}: {self.port})...')
 
         while not self.canClose:
-            print(self.queueConsumerController.clients.__len__)
-            if self.queueConsumerController.clients.__len__ == 0:
-                print("No clients...aborting...")
-                self.canClose = False
+            if self.queueController.isNewConsumer():
+                self.queueController.createConsumer()
+                #self.canClose = True
             else:
-                print('aa')  
+                print('Enviar mensagens...')
+                self.sendMessage()

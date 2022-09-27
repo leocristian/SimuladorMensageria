@@ -4,7 +4,6 @@ import threading
 import string
 import time
 import sys
-from unicodedata import name
 
 class Producer(threading.Thread):
     def __init__(self, name, topic, rate):
@@ -35,19 +34,19 @@ class Producer(threading.Thread):
         while True:
 
             msgBody = self.getRandomMsg()
-            msg = {"clientID": self.name, "topic": self.topic, "body": msgBody}
+            msg = {"clientID": threading.get_ident(), "topic": self.topic, "body": msgBody}
 
             try:
                 self.sendMessage(msg)
-                time.sleep(1/self.rate)
-                #input("Press ENTER to continue...")
+                #time.sleep(1/self.rate)
+                input("Press ENTER to continue...")
             except Exception as err:
                 print(f"Error: {err}")
                 self.server.detach()
                 break
             
-# if __name__=='__main__':
-#     prod1 = Producer("producer 1", "fanout", 10)
+if __name__=='__main__':
+    prod1 = Producer("producer 1", "fanout", 10)
 
-#     prod1.start()
-#     prod1.join()
+    prod1.start()
+    prod1.join()
