@@ -29,6 +29,10 @@ class QueueController:
             print(f"Client: {i['clientID']}----------------")
             for j in i["queue"]:
                 print(j)
+    
+    def showQueueLen(self):
+        for i in self.queues:
+            print(f"{len(i['queue'])} messages messages received from client {i['clientID']} ")
                 
     def showClientQueue(self, clientID):
         for i in self.queues:
