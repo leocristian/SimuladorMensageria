@@ -1,13 +1,16 @@
 import threading
 import socket
-from ..QueueController import QueueController
+import json
+from ..controllers.ConsumersController import ConsumersController
+
 
 class SenderThread(threading.Thread):
     def __init__(self, address, queueController):
         self.address = address
+        self.consumersController = ConsumersController() 
         self.queueController = queueController
         threading.Thread.__init__(self)
-    
+
     def sendMessage(self, msg, address):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR , 1)
@@ -15,12 +18,28 @@ class SenderThread(threading.Thread):
         self.server.send(str(msg).encode())
 
     def run(self):
-        print(f'Sender is started on address ({self.url}: {self.port})...')
+        
+        print(f'sender started on address {self.address}')
 
-        while not self.canClose:
-            if self.queueController.isNewConsumer():
-                self.queueController.createConsumer()
-                #self.canClose = True
+        self.swapper_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.swapper_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.swapper_server.bind(self.address)
+        self.swapper_server.listen(10)
+
+        while True:
+            clientsock, clientAddr = self.swapper_server.accept()
+            msg = clientsock.recv(1024).decode()
+            msg = eval(msg)
+            
+            msg = json.dumps(msg, indent = 4)
+            msg = json.loads(msg)
+
+            print(f'{clientAddr} is new client')
+
+            if self.consumersController.isNewConsumer(msg['topic']):
+                self.consumersController.createConsumer(msg['topic'], clientAddr)
+                self.queueController.createNewQueue(msg)
+                # self.consumersController.showConsumersQueue()
             else:
                 print('Enviar mensagens...')
-                self.sendMessage()
+                #self.sendMessage()

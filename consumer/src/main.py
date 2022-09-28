@@ -4,27 +4,30 @@ import json
 import os
 
 class Consumer(threading.Thread):
-    def __init__(self, address, topic):
-        threading.Thread.__init__(self, name=name)
-        self.address = ("localhost", 8000)
+    def __init__(self, topic):
+        threading.Thread.__init__(self) 
         self.topic = topic
+        self.connAddress = ("localhost", 8001)
 
     def run(self):    
+        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-        self.swapper_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.swapper_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.swapper_server.bind(self.address)
-        self.swapper_server.listen(10)
+        self.client.connect(self.connAddress)
 
-        while True:
-            clientsock = self.swapper_server.accept()
-            msg = clientsock.recv(1024).decode()
+        msg = {"topic": self.topic}
+        self.client.send(str(msg).encode())
+        #self.client.listen(1)
 
-            msg = eval(msg)
+        # while True:
+        #     clientsock = self.client.accept()
+        #     msg = clientsock.recv(1024).decode()
+
+        #     msg = eval(msg)
             
-            msg = json.dumps(msg, indent = 4)
-            msg = json.loads(msg)
+        #     msg = json.dumps(msg, indent = 4)
+        #     msg = json.loads(msg)
             
-            os.system("clear")
-            print("Msg received")
-            print(msg)
+        #     os.system("clear")
+        #     print("Msg received")
+        #     print(msg)

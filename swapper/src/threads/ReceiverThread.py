@@ -2,7 +2,7 @@ import threading
 import socket
 import json
 from os import system
-from ..QueueController import QueueController
+import readchar
 
 class ReceiverThread(threading.Thread):
     def __init__(self, address, queueController):
@@ -28,13 +28,16 @@ class ReceiverThread(threading.Thread):
             msg = json.dumps(msg, indent = 4)
             msg = json.loads(msg)
 
+            print(f'endereço: {clientAddr}')
+
             if self.queueController.isNewClient(msg["topic"]):
                 self.queueController.createNewQueue(msg)
                 print(f"Client {msg['topic']} is connected.")
             else:
+                print(f"fila com o tópico {msg['topic']} já existe")
                 self.queueController.insertInCurrentQueue(msg)
             
             system("cls")
             print("Messages received-----------------------------------")
-            self.queueController.showAllQueues()
+            self.queueController.showQueueLen()
             print("-----------------------------------------------------")

@@ -1,7 +1,7 @@
 from queue import Queue
 from .threads.ReceiverThread import ReceiverThread
 from .threads.SenderThread import SenderThread
-from .QueueController import QueueController
+from .controllers.QueueController import QueueController
 
 class Swapper:
     def __init__(self):
@@ -17,7 +17,7 @@ class Swapper:
 
     def run(self):
         self.recvThread.start()
-        #self.senderThread.start()
+        self.senderThread.start()
 
         self.recvThread.join()
-        #self.senderThread.join()
+        self.senderThread.join()

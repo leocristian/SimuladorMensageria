@@ -10,13 +10,17 @@ class QueueController:
     def isNewConsumer(self, consumerID):
         return (consumerID not in self.consumers)
 
-    def createEmptyQueue(self, topic):
+    def createConsumer(self, topic, address):
+        self.clients.append({"topic":topic, "address":address})
+ 
+    def createEmptyQueue(self, topic): 
         self.queues.append({"topic": topic, "queue": []})
     
     def createNewQueue(self, msg):
         self.clients.append(msg["topic"])
+        print(f"fila criada, tópico: {msg['topic']}")
         self.queues.append({"topic": msg["topic"], "queue": []})
-        self.insertInCurrentQueue(msg)
+        # self.insertInCurrentQueue(msg)
     
     def insertInCurrentQueue(self, msg):
         for i in self.queues:
