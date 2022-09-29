@@ -11,7 +11,7 @@ class Producer(threading.Thread):
         threading.Thread.__init__(self, name=name)
         self.topic = topic
         self.rate = rate
-        self.address = ("localhost", 8000)
+        self.address = ("10.180.46.227", 8000)
 
     def getRandomMsg(self):
         msgLen = random.randint(1, 10)
@@ -47,7 +47,7 @@ class Producer(threading.Thread):
             
 if __name__=='__main__':
 
-    topic = input("Informe o tópico da mensagem para o produtor: ")
+    topic = input("Informe o topico da mensagem para o produtor: ")
     rate = input("Informe a taxa de envio (msg/seg): ")
 
     prod1 = Producer("producer 1", topic, rate)

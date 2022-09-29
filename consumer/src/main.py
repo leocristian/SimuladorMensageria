@@ -7,7 +7,7 @@ class Consumer(threading.Thread):
     def __init__(self, topic):
         threading.Thread.__init__(self) 
         self.topic = topic
-        self.connAddress = ("localhost", 8001)
+        self.connAddress = ("10.180.46.227", 8001)
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #self.client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.client_socket.connect(self.connAddress)

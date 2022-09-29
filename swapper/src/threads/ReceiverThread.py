@@ -1,8 +1,6 @@
 import threading
 import socket
 import json
-from os import system
-import readchar
 
 class ReceiverThread(threading.Thread):
     def __init__(self, address, queueController):
