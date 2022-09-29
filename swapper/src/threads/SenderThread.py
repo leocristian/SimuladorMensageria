@@ -1,22 +1,45 @@
 import threading
-from ..QueueController import QueueController
+import socket
+import json
+from ..controllers.ConsumersController import ConsumersController
+
 
 class SenderThread(threading.Thread):
-    def __init__(self, name, url, port):
-        self.url = url
-        self.port = port
+    def __init__(self, address, queueController):
+        self.address = address
+        self.consumersController = ConsumersController() 
+        self.queueController = queueController
         threading.Thread.__init__(self)
-        self.name = name
-        self.queueConsumerController = QueueController()
-        self.canClose = True
-    
-    def run(self):
-        print(f'Sender is started on address ({self.url}: {self.port})...')
 
-        while not self.canClose:
-            print(self.queueConsumerController.clients.__len__)
-            if self.queueConsumerController.clients.__len__ == 0:
-                print("No clients...aborting...")
-                self.canClose = False
+    def sendMessage(self, msg, address):
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR , 1)
+        self.server.connect(address)
+        self.server.send(str(msg).encode())
+
+    def run(self):
+        
+        print(f'sender started on address {self.address}')
+
+        self.swapper_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.swapper_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.swapper_server.bind(self.address)
+        self.swapper_server.listen(10)
+
+        while True:
+            clientsock, clientAddr = self.swapper_server.accept()
+            msg = clientsock.recv(1024).decode()
+            msg = eval(msg)
+            
+            msg = json.dumps(msg, indent = 4)
+            msg = json.loads(msg)
+
+            print(f'{clientAddr} is new client')
+
+            if self.consumersController.isNewConsumer(msg['topic']):
+                self.consumersController.createConsumer(msg['topic'], clientAddr)
+                self.queueController.createNewQueue(msg)
+                # self.consumersController.showConsumersQueue()
             else:
-                print('aa')  
+                print('Enviar mensagens...')
+                #self.sendMessage()

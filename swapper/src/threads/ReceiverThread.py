@@ -2,24 +2,21 @@ import threading
 import socket
 import json
 from os import system
-from ..QueueController import QueueController
+import readchar
 
 class ReceiverThread(threading.Thread):
-    def __init__(self, name, url, port):
-        self.url = url
-        self.port = port
+    def __init__(self, address, queueController):
+        self.address = address
+        self.queueController = queueController
         threading.Thread.__init__(self)
-        self.name = name
-        self.queueProducerController = QueueController()
     
     def run(self):
-        addres = (self.url, self.port) #host and port
         self.swapper_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.swapper_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.swapper_server.bind(addres)
+        self.swapper_server.bind(self.address)
         self.swapper_server.listen(10)
 
-        print(f'Receiver is started on address ({self.url}: {self.port})...')
+        print(f'Receiver is started on address ({self.address[0]}: {self.address[1]})...')
         
         while True:
         
@@ -31,13 +28,16 @@ class ReceiverThread(threading.Thread):
             msg = json.dumps(msg, indent = 4)
             msg = json.loads(msg)
 
-            if self.queueProducerController.isNewClient(msg["clientID"]):
-                self.queueProducerController.createNewQueue(msg)
-                print(f"Client {msg['clientID']} is connected.")
+            print(f'endereço: {clientAddr}')
+
+            if self.queueController.isNewClient(msg["topic"]):
+                self.queueController.createNewQueue(msg)
+                print(f"Client {msg['topic']} is connected.")
             else:
-                self.queueProducerController.insertInCurrentQueue(msg)
+                print(f"fila com o tópico {msg['topic']} já existe")
+                self.queueController.insertInCurrentQueue(msg)
             
             system("cls")
             print("Messages received-----------------------------------")
-            self.queueProducerController.showAllQueues()
+            self.queueController.showQueueLen()
             print("-----------------------------------------------------")
