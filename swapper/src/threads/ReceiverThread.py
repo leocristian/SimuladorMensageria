@@ -28,16 +28,15 @@ class ReceiverThread(threading.Thread):
             msg = json.dumps(msg, indent = 4)
             msg = json.loads(msg)
 
-            print(f'endereço: {clientAddr}')
-
-            if self.queueController.isNewClient(msg["topic"]):
+            if self.queueController.isNewTopic(msg["topic"]):
                 self.queueController.createNewQueue(msg)
-                print(f"Client {msg['topic']} is connected.")
+                print(f"fila do tópico {msg['topic']} foi criada por um produtor...")
+                self.queueController.insertInCurrentQueue(msg)
             else:
-                print(f"fila com o tópico {msg['topic']} já existe")
+                print(f"fila com o tópico {msg['topic']} já existe, mensagem inserida...")
                 self.queueController.insertInCurrentQueue(msg)
             
-            system("cls")
-            print("Messages received-----------------------------------")
+            #system("cls")
+            #print("Messages received-----------------------------------")
             self.queueController.showQueueLen()
-            print("-----------------------------------------------------")
+            #print("-----------------------------------------------------")

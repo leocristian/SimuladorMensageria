@@ -34,11 +34,13 @@ class SenderThread(threading.Thread):
             msg = json.dumps(msg, indent = 4)
             msg = json.loads(msg)
 
-            print(f'{clientAddr} is new client')
-
             if self.consumersController.isNewConsumer(msg['topic']):
                 self.consumersController.createConsumer(msg['topic'], clientAddr)
-                self.queueController.createNewQueue(msg)
+                if self.queueController.isNewTopic(msg['topic']):
+                    self.queueController.createNewQueue(msg)
+                    print(f"fila com o tópico {msg['topic']} foi criada pelo cliente {clientAddr}...")
+                else:
+                    print(f"fila com o tópico {msg['topic']} já existe...")
                 # self.consumersController.showConsumersQueue()
             else:
                 print('Enviar mensagens...')

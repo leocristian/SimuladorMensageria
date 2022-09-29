@@ -46,7 +46,11 @@ class Producer(threading.Thread):
                 break
             
 if __name__=='__main__':
-    prod1 = Producer("producer 1", "ass", 10)
+
+    topic = input("Informe o tópico da mensagem para o produtor: ")
+    rate = input("Informe a taxa de envio (msg/seg): ")
+
+    prod1 = Producer("producer 1", topic, rate)
 
     prod1.start()
     prod1.join()
