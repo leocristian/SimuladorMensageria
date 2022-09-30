@@ -1,11 +1,13 @@
 import threading
 import socket
 import json
+import time
 
 class ReceiverThread(threading.Thread):
-    def __init__(self, address, queueController):
+    def __init__(self, address, queueController, condition):
         self.address = address
         self.queueController = queueController
+        self.condition = condition
         threading.Thread.__init__(self)
     
     def run(self):
@@ -26,6 +28,8 @@ class ReceiverThread(threading.Thread):
             msg = json.dumps(msg, indent = 4)
             msg = json.loads(msg)
 
+            self.condition.acquire()
+            print(f"condition acquired by {self.name}")
             if self.queueController.isNewTopic(msg["topic"]):
                 self.queueController.createNewQueue(msg)
                 print(f"fila do tópico {msg['topic']} foi criada por um produtor...")
@@ -33,8 +37,13 @@ class ReceiverThread(threading.Thread):
             else:
                 print(f"fila com o tópico {msg['topic']} já existe, mensagem inserida...")
                 self.queueController.insertInCurrentQueue(msg)
-            
+            self.condition.notify()
+            print(f"condition notified by {self.name}")
+            self.condition.release()
+            print(f"condition released by {self.name}")
+
+            time.sleep(2)
             #system("cls")
             #print("Messages received-----------------------------------")
-            self.queueController.showQueueLen()
+            #self.queueController.showQueueLen()
             #print("-----------------------------------------------------")

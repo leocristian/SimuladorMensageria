@@ -2,16 +2,14 @@ import socket
 import random
 import threading
 import string
-import time
 import sys
 
 class Producer(threading.Thread):
-    def __init__(self, name, topic, rate):
-        print(f"producer {name} created...")
-        threading.Thread.__init__(self, name=name)
+    def __init__(self, topic, rate):
+        threading.Thread.__init__(self)
         self.topic = topic
         self.rate = rate
-        self.address = ("10.180.46.227", 8000)
+        self.address = ("192.168.0.21", 8000)
 
     def getRandomMsg(self):
         msgLen = random.randint(1, 10)
@@ -50,7 +48,7 @@ if __name__=='__main__':
     topic = input("Informe o topico da mensagem para o produtor: ")
     rate = input("Informe a taxa de envio (msg/seg): ")
 
-    prod1 = Producer("producer 1", topic, rate)
+    prod1 = Producer(topic, rate)
 
     prod1.start()
     prod1.join()

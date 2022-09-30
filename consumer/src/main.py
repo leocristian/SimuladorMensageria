@@ -34,24 +34,6 @@ class Consumer(threading.Thread):
     def run(self):    
         self.sendTopic()
         self.receiveMsg()
-        
-        #clientsock, clientAddr = self.client.accept()
-        #msg = clientsock.recv(1024).decode()
-        
-        #self.client.listen(1)
-
-        # while True:
-        #     clientsock = self.client.accept()
-        #     msg = clientsock.recv(1024).decode()
-
-        #     msg = eval(msg)
-            
-        #     msg = json.dumps(msg, indent = 4)
-        #     msg = json.loads(msg)
-            
-        #     os.system("clear")
-        #     print("Msg received")
-        #     print(msg)
 
 if __name__ == '__main__':
 
