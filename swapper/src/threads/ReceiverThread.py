@@ -31,7 +31,7 @@ class ReceiverThread(threading.Thread):
                 msg = json.dumps(msg, indent = 4)
                 msg = json.loads(msg)
 
-                # self.condition.acquire()
+                self.condition.acquire()
                 # print(f"condition acquired by {self.name}")
                 if self.queueController.isNewTopic(msg["topic"]):
                     self.queueController.createNewQueue(msg)
@@ -40,9 +40,9 @@ class ReceiverThread(threading.Thread):
                 else:
                     print(f"produtor {clientAddr} adicionou uma mensagem na fila do tópico {msg['topic']}...")
                     self.queueController.insertInCurrentQueue(msg)
-                # self.condition.notify()
+                self.condition.notify()
                 # print(f"condition notified by {self.name}")
-                # self.condition.release()
+                self.condition.release()
                 # print(f"condition released by {self.name}")
 
                 os.system("clear")
