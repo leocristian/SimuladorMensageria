@@ -2,14 +2,14 @@ import threading
 from .threads.ReceiverThread import ReceiverThread
 from .threads.SenderThread import SenderThread
 from .controllers.QueueController import QueueController
+import socket
 
 class Swapper:
     def __init__(self):
         self.queueController = QueueController()
         self.condition = threading.Condition()
 
-        host = "192.168.0.21"
-
+        host = "192.168.0.16"
         recvAddr = (host, 8000)
         senderAddr = (host, 8001)
         

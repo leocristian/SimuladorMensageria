@@ -21,7 +21,7 @@ class QueueController:
     def insertInCurrentQueue(self, msg):
         for i in self.queues:
             if i["topic"] == msg["topic"]:
-                 i["queue"].append({"clientID": msg["clientID"], "body": msg["body"]})
+                 i["queue"].append({"body": msg["body"]})
     
     def removeFromQueue(self, topic):
         for i in self.queues:

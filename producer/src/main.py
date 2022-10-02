@@ -2,6 +2,7 @@ import socket
 import random
 import threading
 import string
+import time
 import sys
 
 class Producer(threading.Thread):
@@ -9,7 +10,11 @@ class Producer(threading.Thread):
         threading.Thread.__init__(self)
         self.topic = topic
         self.rate = rate
-        self.address = ("192.168.0.21", 8000)
+        self.address = ("192.168.0.16", 8000)
+
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR , 1)
+        self.server.connect(self.address)
 
     def getRandomMsg(self):
         msgLen = random.randint(1, 10)
@@ -23,21 +28,19 @@ class Producer(threading.Thread):
         size = str(sys.getsizeof(str(msg)))
         print(f"Lenght: {size}")
 
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR , 1)
-        self.server.connect(self.address)
         self.server.send(str(msg).encode())
     
     def run(self):
         while True:
 
+            msg = ''
             msgBody = self.getRandomMsg()
-            msg = {"clientID": threading.get_ident(), "topic": self.topic, "body": msgBody}
+            msg = {"topic": self.topic, "body": msgBody}
 
             try:
                 self.sendMessage(msg)
-                #time.sleep(1/self.rate)
-                input(f"({threading.get_ident()})Press ENTER to continue...")
+                time.sleep(1/self.rate)
+                # input(f"({threading.get_ident()})Press ENTER to continue...")
             except Exception as err:
                 print(f"Error: {err}")
                 self.server.detach()
@@ -46,7 +49,7 @@ class Producer(threading.Thread):
 if __name__=='__main__':
 
     topic = input("Informe o topico da mensagem para o produtor: ")
-    rate = input("Informe a taxa de envio (msg/seg): ")
+    rate = int(input("Informe a taxa de envio (msg/seg): "))
 
     prod1 = Producer(topic, rate)
 

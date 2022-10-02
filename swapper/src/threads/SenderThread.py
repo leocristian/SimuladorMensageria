@@ -1,6 +1,7 @@
 import threading
 import socket
 import json
+import time
 from ..controllers.ConsumersController import ConsumersController
 
 
@@ -14,8 +15,16 @@ class SenderThread(threading.Thread):
     def sendMessage(self, msg, address):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR , 1)
-        self.server.connect(address)
+        # self.server.connect(address)
+
         self.server.send(str(msg).encode())
+
+    def popFromQueue(self, topic):
+        for x in self.queueController.queues:
+            if x['topic'] == topic:
+                msg = x['queue'].pop()
+
+        return msg['body']
 
     def run(self):
         
@@ -41,7 +50,10 @@ class SenderThread(threading.Thread):
                     print(f"fila com o tópico {msg['topic']} foi criada pelo cliente {clientAddr}...")
                 else:
                     print(f"fila com o tópico {msg['topic']} já existe...")
+                    msgSend = self.popFromQueue(msg['topic'])
+                    print(f"Mensagem {msgSend} será enviada para o consumidor {clientAddr}")
+                    self.sendMessage(msgSend, clientAddr)
                 # self.consumersController.showConsumersQueue()
             else:
-                print('Enviar mensagens...')
-                #self.sendMessage()
+                print('Enviar mensagens...')  
+                time.sleep(2)
