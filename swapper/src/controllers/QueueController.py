@@ -22,6 +22,13 @@ class QueueController:
         for i in self.queues:
             if i["topic"] == msg["topic"]:
                  i["queue"].append({"body": msg["body"]})
+
+    def insertAllQueues(self, msg):
+        for i in self.queues:
+            i['queue'].append({"body": msg["body"]})
+
+    def existsQueue(self):
+        return (len(self.queues) > 0)
     
     def removeFromQueue(self, topic):
         for i in self.queues:

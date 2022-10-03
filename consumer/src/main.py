@@ -2,15 +2,30 @@ import socket
 import threading
 import json
 import os
+import time
 
 class Consumer(threading.Thread):
     def __init__(self, topic):
         threading.Thread.__init__(self) 
         self.topic = topic
-        self.connAddress = ("192.168.0.16", 8001)
+        self.connAddress = ("localhost", 8001)
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #self.client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.client_socket.connect(self.connAddress)
+
+        tries = 0
+        while tries < 3:
+            try:
+                self.client_socket.connect(self.connAddress)
+                break
+            except Exception as err:
+                print("Erro ao conectar-se com o trocador, tentando novamente...")
+                tries += 1
+                time.sleep(2)
+            
+            if tries == 2:
+                print("Tentativas máximas atingida!")
+                quit()
+
 
     def sendTopic(self):
         msg = {"topic": self.topic}
@@ -30,6 +45,7 @@ class Consumer(threading.Thread):
             msgRecvd = json.loads(msgRecvd)
             
             print(f"Mensagem recebida: {msgRecvd}")
+            input()
     
     def run(self):    
         self.sendTopic()

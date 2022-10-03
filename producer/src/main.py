@@ -10,11 +10,7 @@ class Producer(threading.Thread):
         threading.Thread.__init__(self)
         self.topic = topic
         self.rate = rate
-        self.address = ("192.168.0.16", 8000)
-
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR , 1)
-        self.server.connect(self.address)
+        self.address = ("localhost", 8000)
 
     def getRandomMsg(self):
         msgLen = random.randint(1, 10)
@@ -28,8 +24,14 @@ class Producer(threading.Thread):
         size = str(sys.getsizeof(str(msg)))
         print(f"Lenght: {size}")
 
-        self.server.send(str(msg).encode())
-    
+        try:
+            self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.server.connect(self.address)
+            self.server.send(str(msg).encode())
+        except Exception as err:
+            print(f"Erro: {err}")
+            return
+        
     def run(self):
         while True:
 
@@ -40,11 +42,11 @@ class Producer(threading.Thread):
             try:
                 self.sendMessage(msg)
                 time.sleep(1/self.rate)
-                # input(f"({threading.get_ident()})Press ENTER to continue...")
+                input()
             except Exception as err:
-                print(f"Error: {err}")
+                print(f"Erro: {err}")
                 self.server.detach()
-                break
+                return
             
 if __name__=='__main__':
 
