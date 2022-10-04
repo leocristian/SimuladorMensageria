@@ -3,6 +3,7 @@ import threading
 import socket
 import json
 import time
+from termcolor import colored
 import os
 
 class ReceiverThread(threading.Thread):
@@ -12,46 +13,47 @@ class ReceiverThread(threading.Thread):
         self.condition = condition
         threading.Thread.__init__(self, name="Receiver")
         self.swapper_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.swapper_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.swapper_server.bind(self.address)
 
         self.conectedProds = []
     
     def messagesHandler(self, client, clientAddr):
-        msg = client.recv(1024).decode()
+        while True:
 
-        # print(msg)
-        msg = eval(msg)
-        
-        msg = json.dumps(msg, indent = 4)
-        msg = json.loads(msg)
+            try:
+                msg = client.recv(1024).decode()
 
-        self.condition.acquire()
-        # print(f"condition acquired by {self.name}")
-        if self.queueController.isNewTopic(msg["topic"]) and msg['topic'] != 'fanout':
-            self.queueController.createNewQueue(msg)
-            print(f"fila do tópico {msg['topic']} foi criada pelo produtor {clientAddr}...")
-            self.queueController.insertInCurrentQueue(msg)
-        else:
-            if msg['topic'] == 'fanout':
-                if self.queueController.existsQueue():
-                    print('Tópico fanout, mensagem inserida em todas as filas...')
-                    self.queueController.insertAllQueues(msg)
-                else:
+                # print(msg)
+                msg = eval(msg)
+                
+                msg = json.dumps(msg, indent = 4)
+                msg = json.loads(msg)
+
+                self.condition.acquire()
+                if self.queueController.isNewTopic(msg["topic"]) and msg['topic'] != 'fanout':
                     self.queueController.createNewQueue(msg)
-            else:
-                print(f"produtor {clientAddr} adicionou uma mensagem na fila do tópico {msg['topic']}...")
-                self.queueController.insertInCurrentQueue(msg)
+                    print(f"fila do tópico {msg['topic']} foi criada pelo produtor {clientAddr}...")
+                    self.queueController.insertInCurrentQueue(msg)
+                else:
+                    if msg['topic'] == 'fanout':
+                        if self.queueController.existsQueue():
+                            print('Tópico fanout, mensagem inserida em todas as filas...')
+                            self.queueController.insertAllQueues(msg)
+                        else:
+                            self.queueController.createNewQueue(msg)
+                    else:
+                        print(f"produtor {clientAddr} adicionou uma mensagem na fila do tópico {msg['topic']}...")
+                        self.queueController.insertInCurrentQueue(msg)
 
-        self.condition.notify()
-        # print(f"condition notified by {self.name}")
-        self.condition.release()
-        # print(f"condition released by {self.name}")
+                self.condition.notify()
+                self.condition.release()
 
-        #os.system("clear")
-        #print("Messages received-----------------------------------")
-        self.queueController.showQueueLen()
-            #print("-----------------------------------------------------")
+                # os.system('clear')
+                self.queueController.showQueueLen()
+            except:
+                self.conectedProds.remove(client)
+                print(colored(f"Produtor ({clientAddr} desconectou-se!", "yellow"))
+                break
 
     def run(self):
         
@@ -59,12 +61,14 @@ class ReceiverThread(threading.Thread):
         print(f'Receiver is started on address ({self.address[0]}: {self.address[1]})...')
         
         try:
-
             while True:
                 clientsock, clientAddr = self.swapper_server.accept()
-                print(f"Novo produtor conectado ({clientAddr}.")
+                self.conectedProds.append(clientsock)
 
-                self.messagesHandler(clientsock, clientAddr)
+                print(colored(f"Novo produtor conectado ({clientAddr}.", "yellow"))
+
+                thread = threading.Thread(target=self.messagesHandler, args=[clientsock, clientAddr])
+                thread.start()
                 
         except Exception as err:
             print(f"Erro: {err}")

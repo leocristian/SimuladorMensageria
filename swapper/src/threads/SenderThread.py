@@ -53,7 +53,6 @@ class SenderThread(threading.Thread):
                     msgSend = self.popFromQueue(msg['topic'])
                     if msgSend != '':
                         print(f"Mensagem {msgSend} será enviada para o consumidor {clientAddr}")
-                        input()
                         self.sendMessage(msgSend, clientAddr)
                     
                     input()

@@ -1,8 +1,8 @@
 import socket
 import threading
 import json
-import os
 import time
+from termcolor import colored
 
 class Consumer(threading.Thread):
     def __init__(self, topic):
@@ -18,12 +18,12 @@ class Consumer(threading.Thread):
                 self.client_socket.connect(self.connAddress)
                 break
             except Exception as err:
-                print("Erro ao conectar-se com o trocador, tentando novamente...")
+                print(colored("Erro ao conectar-se com o trocador, tentando novamente...", "yellow"))
                 tries += 1
                 time.sleep(2)
             
             if tries == 2:
-                print("Tentativas máximas atingida!")
+                print(colored("Não foi possível se conectar ao trocador!", "red"))
                 quit()
 
 
@@ -33,10 +33,10 @@ class Consumer(threading.Thread):
         try:
             self.client_socket.send(str(msg).encode())
         finally:
-            print("Tópico enviado com sucesso!")
+            print(colored("Tópico enviado com sucesso!", "green"))
     
     def receiveMsg(self):
-        print("Aguardando mensagens...")
+        print("Aguardando mensagem...")
         while True:
             msgRecvd = self.client_socket.recv(1024).decode()
 
