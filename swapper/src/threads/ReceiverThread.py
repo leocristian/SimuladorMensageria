@@ -48,11 +48,12 @@ class ReceiverThread(threading.Thread):
                 self.condition.notify()
                 self.condition.release()
 
-                # os.system('clear')
+                #os.system('clear')
                 self.queueController.showQueueLen()
             except:
                 self.conectedProds.remove(client)
                 print(colored(f"Produtor ({clientAddr} desconectou-se!", "yellow"))
+                client.close()
                 break
 
     def run(self):

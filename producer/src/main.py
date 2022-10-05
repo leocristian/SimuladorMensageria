@@ -44,9 +44,10 @@ class Producer(threading.Thread):
 
         try:
             self.server.send(str(msg).encode())
+            print("Mensagem enviada com sucesso!")
         except Exception as err:
-            print(f"Erro: {err}")
-            return
+            print("Erro ao enviar mensagem, trocador desconectado.")
+            quit()
         
     def run(self):
         while True:
@@ -67,7 +68,13 @@ class Producer(threading.Thread):
 if __name__=='__main__':
 
     topic = input("Informe o topico da mensagem para o produtor: ")
-    rate = int(input("Informe a taxa de envio (msg/seg): "))
+
+    while True:
+        try:
+            rate = int(input("Informe a taxa de envio (msg/seg): "))
+            break
+        except:
+            print("Informe uma taxa válida!")
 
     prod1 = Producer(topic, rate)
 
