@@ -59,7 +59,6 @@ class Producer(threading.Thread):
             try:
                 self.sendMessage(msg)
                 time.sleep(1/self.rate)
-                # input()
             except Exception as err:
                 print(f"Erro: {err}")
                 self.server.detach()

@@ -1,7 +1,7 @@
 import threading
 from .threads.ReceiverThread import ReceiverThread
 from .threads.SenderThread import SenderThread
-from .controllers.QueueController import QueueController
+from controllers.QueueController import QueueController
 import socket
 from termcolor import colored
 
@@ -28,3 +28,10 @@ class Swapper:
             self.senderThread.join()
         except KeyboardInterrupt:
             print(colored("Trocador finalizado com sucesso!", "red"))
+
+if __name__ == '__main__':
+    swapper1 = Swapper()
+    
+    swapper1.run()
+    # swapper1.start()
+    # swapper1.join()
