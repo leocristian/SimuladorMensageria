@@ -19,19 +19,27 @@ class SenderThread(threading.Thread):
         self.conectedCons = []
 
 
-    def sendMessage(self, msg):
-        self.swapper_server.send(str(msg).encode())
+    def sendMessages(self, client, topic):
+
+        for x in self.queueController.queues:
+            if x['topic'] == topic:
+                while len(x['queue']) > 0:
+                    self.condition.acquire()
+                    msg = x['queue'].pop()
+                    client.send(str(msg).encode())
+                    self.condition.wait()
+                    self.condition.release()
+                quit()
 
     def popFromQueue(self, topic):
-        self.condition.acquire()
+        
         for x in self.queueController.queues:
             if len(x['queue']) == 0:
                 print(f"lista com o tópico {x['topic']} está vazia")
                 return ''
             if x['topic'] == topic:
                 msg = x['queue'].pop()
-        self.condition.wait()
-        self.condition.release()
+        
 
         return msg
 
@@ -57,16 +65,18 @@ class SenderThread(threading.Thread):
                     else:
                         print(f"fila com o tópico {msg['topic']} já existe...")
                         print("Enviando mensagens...")
-                        while True:
 
-                            msgSend = self.popFromQueue(msg['topic'])
-                            if msgSend != '':
-                                print(f"Mensagem {msgSend} será enviada para o consumidor {clientAddr}")
-                                client.send(str(msg).encode())
-                            else:
-                                quit()
+                        self.sendMessages(client, msg['topic'])
+                        # while True:
+
+                        #     msgSend = self.popFromQueue(msg['topic'])
+                        #     if msgSend != '':
+                        #         print(f"Mensagem {msgSend} será enviada para o consumidor {clientAddr}")
+                        #         client.send(str(msg).encode())
+                        #     else:
+                        #         quit()
                     
-                            time.sleep(1)
+                        #     time.sleep(1)
         except:
             self.conectedProds.remove(client)
             print(colored(f"Consumidor ({clientAddr} desconectou-se!", "yellow"))
@@ -74,7 +84,7 @@ class SenderThread(threading.Thread):
 
     def run(self):
         
-        print(f'sender started on address {self.address}')
+        print(f'Thread sender inicializada no endereço: {self.address}')
         
         try:
             while True:

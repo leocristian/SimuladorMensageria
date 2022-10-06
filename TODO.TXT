@@ -1,4 +1,0 @@
-legenda: 
-problema: ❗
-andamento: 🔄
-concluido: ✅

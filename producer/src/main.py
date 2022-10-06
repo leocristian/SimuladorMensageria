@@ -31,20 +31,14 @@ class Producer(threading.Thread):
                 quit()
 
     def getRandomMsg(self):
-        msgLen = random.randint(1, 10)
+        msgLen = random.randint(1, 100)
         return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(msgLen))
 
     def sendMessage(self, msg):
-        print("Sending...")
-        print(f"Msg topic: {msg['topic']}")
-        print(f"Msg body: {msg['body']}")
-
         size = str(sys.getsizeof(str(msg)))
-        print(f"Lenght: {size}")
-
         try:
             self.server.send(str(msg).encode())
-            print("Mensagem enviada com sucesso!")
+            print(f"Mensagem enviada com sucesso ({size} bytes)...")
         except Exception as err:
             print("Erro ao enviar mensagem, trocador desconectado.")
             quit()

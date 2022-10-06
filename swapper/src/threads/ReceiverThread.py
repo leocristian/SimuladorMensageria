@@ -48,7 +48,7 @@ class ReceiverThread(threading.Thread):
                 self.condition.notify()
                 self.condition.release()
 
-                #os.system('clear')
+                os.system('clear')
                 self.queueController.showQueueLen()
             except:
                 self.conectedProds.remove(client)
@@ -59,7 +59,7 @@ class ReceiverThread(threading.Thread):
     def run(self):
         
         self.swapper_server.listen(10)
-        print(f'Receiver is started on address ({self.address[0]}: {self.address[1]})...')
+        print(f'Thread receiver inicializada no endereço: ({self.address[0]}: {self.address[1]})...')
         
         try:
             while True:
