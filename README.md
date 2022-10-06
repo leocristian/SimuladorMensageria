@@ -1,8 +1,4 @@
-# SimuladorMensageria
-Projeto de um sistema de mensageria desenvolvido durante a disciplina de Sistemas Distribuídos.
+## Como executar
 
-# Sumário
-
-+ [**Tarefas do produtor**](./producer/README.MD)
-+ [**Tarefas do consumidor**](./consumer/README.MD)
-+ [**Tarefas do trocador**](./swapper/README.MD)
+1. Acessar a pasta raiz e executar o comando "python3 trocador.py"
+2. Depois que o trocador estiver online, acessar a pasta producer/src e executar o comando "python3 main.py" (você pode executar quantos produtores quiser)
