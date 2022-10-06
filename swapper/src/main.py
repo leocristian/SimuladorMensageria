@@ -2,7 +2,6 @@ import threading
 from .threads.ReceiverThread import ReceiverThread
 from .threads.SenderThread import SenderThread
 from .controllers.QueueController import QueueController
-import socket
 from termcolor import colored
 
 class Swapper:

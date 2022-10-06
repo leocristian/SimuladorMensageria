@@ -56,5 +56,8 @@ if __name__ == '__main__':
     topic = input("Informe o tópico da mensagem para o consumidor: ")
     cons1 = Consumer(topic)
 
-    cons1.start()
-    cons1.join()
+    try:
+        cons1.start()
+        cons1.join()
+    except KeyboardInterrupt:
+        print(colored("Consumidor finalizado com sucesso!", "red"))

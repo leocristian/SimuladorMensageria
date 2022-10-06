@@ -31,22 +31,17 @@ class Producer(threading.Thread):
                 quit()
 
     def getRandomMsg(self):
-        msgLen = random.randint(1, 10)
+        msgLen = random.randint(1, 100)
         return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(msgLen))
 
     def sendMessage(self, msg):
-        print("Sending...")
-        print(f"Msg topic: {msg['topic']}")
-        print(f"Msg body: {msg['body']}")
-
         size = str(sys.getsizeof(str(msg)))
-        print(f"Lenght: {size}")
-
         try:
             self.server.send(str(msg).encode())
+            print(f"Mensagem enviada com sucesso ({size} bytes)...")
         except Exception as err:
-            print(f"Erro: {err}")
-            return
+            print("Erro ao enviar mensagem, trocador desconectado.")
+            quit()
         
     def run(self):
         while True:
@@ -58,7 +53,6 @@ class Producer(threading.Thread):
             try:
                 self.sendMessage(msg)
                 time.sleep(1/self.rate)
-                # input()
             except Exception as err:
                 print(f"Erro: {err}")
                 self.server.detach()
@@ -67,7 +61,13 @@ class Producer(threading.Thread):
 if __name__=='__main__':
 
     topic = input("Informe o topico da mensagem para o produtor: ")
-    rate = int(input("Informe a taxa de envio (msg/seg): "))
+
+    while True:
+        try:
+            rate = int(input("Informe a taxa de envio (msg/seg): "))
+            break
+        except:
+            print("Informe uma taxa válida!")
 
     prod1 = Producer(topic, rate)
 
