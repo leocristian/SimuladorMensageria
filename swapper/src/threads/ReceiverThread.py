@@ -32,17 +32,17 @@ class ReceiverThread(threading.Thread):
                 self.condition.acquire()
                 if self.queueController.isNewTopic(msg["topic"]) and msg['topic'] != 'fanout':
                     self.queueController.createNewQueue(msg)
-                    print(f"fila do tópico {msg['topic']} foi criada pelo produtor {clientAddr}...")
+                    # print(f"fila do tópico {msg['topic']} foi criada pelo produtor {clientAddr}...")
                     self.queueController.insertInCurrentQueue(msg)
                 else:
                     if msg['topic'] == 'fanout':
                         if self.queueController.existsQueue():
-                            print('Tópico fanout, mensagem inserida em todas as filas...')
+                            # print('Tópico fanout, mensagem inserida em todas as filas...')
                             self.queueController.insertAllQueues(msg)
                         else:
                             self.queueController.createNewQueue(msg)
                     else:
-                        print(f"produtor {clientAddr} adicionou uma mensagem na fila do tópico {msg['topic']}...")
+                        # print(f"produtor {clientAddr} adicionou uma mensagem na fila do tópico {msg['topic']}...")
                         self.queueController.insertInCurrentQueue(msg)
 
                 self.condition.notify()
@@ -52,7 +52,7 @@ class ReceiverThread(threading.Thread):
                 self.queueController.showQueueLen()
             except:
                 self.conectedProds.remove(client)
-                print(colored(f"Produtor ({clientAddr} desconectou-se!", "yellow"))
+                # print(colored(f"Produtor ({clientAddr} desconectou-se!", "yellow"))
                 client.close()
                 break
 
